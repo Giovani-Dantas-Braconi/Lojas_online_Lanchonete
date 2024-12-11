@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: django_app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file: 
+      - .env  # Carregar variáveis do arquivo .env
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.6
+    container_name: mariadb_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: ${DJANGO_DB_NAME}  # Usar variáveis do .env
+      MYSQL_USER: ${DJANGO_DB_USER}
+      MYSQL_PASSWORD: ${DJANGO_DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:
